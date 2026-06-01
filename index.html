@@ -873,6 +873,8 @@ var ratingMsgs=['','😞 Très insatisfait','😕 Insatisfait','😐 Correct','�
 function showRating(){
   if(ratingShown) return;
   ratingShown=true;
+  mgrSaveConv();
+  mgrRefresh();
   document.getElementById('ratingWrap').classList.add('show');
 }
 function setRating(n){
@@ -884,6 +886,9 @@ function setRating(n){
 function sendRating(){
   mgrSaveConv();
   if(!currentRating) return;
+  // Mettre à jour la note dans la dernière conversation sauvegardée
+  if(mgrConversations.length > 0) mgrConversations[0].rating = currentRating;
+  mgrRefresh();
   document.getElementById('ratingSend').classList.remove('show');
   var done=document.getElementById('ratingDone');
   done.textContent='✅ Merci pour votre avis — '+currentRating+'/5 étoiles enregistré';

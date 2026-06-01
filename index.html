@@ -961,7 +961,7 @@ async function mgrSaveConv(){
     date: now.toLocaleDateString('fr-FR'),
     time: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
     preview: chatHistory[0].content.substring(0,60),
-    messages: chatHistory.slice(),
+    message: chatHistory.slice(),
     rating: currentRating || null
   };
   try{
@@ -1024,7 +1024,7 @@ async function mgrGenFiche(idx, btn){
   var conv = mgrConversations[idx];
   btn.textContent = 'Génération en cours...';
   btn.disabled = true;
-  var msgs = conv.messages || [];
+  var msgs = conv.message || conv.messages || [];
   var prompt = "Genere une fiche dossier structuree. Sections : MOTIF DE CONTACT, RESUME, ACTIONS, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : " +
     msgs.map(function(m){return (m.role==='user'?'Client':'Free Bot')+' : '+m.content;}).join(' | ');
   try{

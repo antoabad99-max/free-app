@@ -662,7 +662,7 @@ function addMsg(role,text){
   }else{
     div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="c-logo-wrap"><span class="c-logo-static">free</span></div></div>';
     if(voiceOn)speak(text);
-  if(checkForGoodbye(text)){setTimeout(showRating,800);}
+    if(checkForGoodbye(text)){setTimeout(showRating,800);}
   }
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
 }

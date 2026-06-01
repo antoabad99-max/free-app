@@ -1065,8 +1065,13 @@ async function mgrGenFiche(idx, btn){
 function mgrToggleFiche(idx, btn){
   var body = document.getElementById('fiche-body-'+idx);
   if(!body) return;
-  body.classList.toggle('collapsed');
-  btn.textContent = body.classList.contains('collapsed') ? '□ Agrandir' : '— Réduire';
+  if(body.style.display==='none'){
+    body.style.display='block';
+    btn.textContent='— Réduire';
+  }else{
+    body.style.display='none';
+    btn.textContent='□ Agrandir';
+  }
 }
 function mgrCopyFiche(idx, btn){
   var body = document.getElementById('fiche-body-'+idx);

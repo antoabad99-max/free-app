@@ -220,7 +220,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
 .fiche-btn{background:transparent;border:1px solid var(--border2);color:var(--grey);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
 .fiche-btn:hover{border-color:var(--red);color:var(--red)}
 .fiche-body{padding:14px 16px;font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto}
-.fiche-body.collapsed{display:none}
+.fiche-body{display:block}.fiche-body.collapsed{display:none!important}
 #gen-fiche-btn{width:calc(100% - 40px);margin:0 20px 12px;background:transparent;border:1.5px dashed var(--border2);color:var(--grey);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer;transition:all 0.2s}
 #gen-fiche-btn:hover{border-color:var(--red);color:var(--red)}
 
@@ -678,7 +678,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <div class="bnav-label">Free Bot</div>
     </div>
     <div class="bnav-item" id="bnav-manager" onclick="showPage('manager')">
-      <div class="bnav-icon">⚙️</div>
+      <div class="bnav-icon">📊</div>
       <div class="bnav-label">Manager</div>
     </div>
     <div class="bnav-item" id="bnav-reglages" onclick="showPage('reglages')">
@@ -844,15 +844,20 @@ async function genFiche(){
 }
 
 function toggleFiche(){
-  ficheVisible=!ficheVisible;
   var body=document.getElementById('ficheBody');
   var btn=document.getElementById('ficheMinBtn');
-  if(ficheVisible){
+  if(!body||!btn) return;
+  var isCollapsed=body.classList.contains('collapsed');
+  if(isCollapsed){
     body.classList.remove('collapsed');
+    body.style.display='block';
     btn.textContent='— Réduire';
+    ficheVisible=true;
   }else{
     body.classList.add('collapsed');
+    body.style.display='none';
     btn.textContent='□ Agrandir';
+    ficheVisible=false;
   }
 }
 function expandFiche(){
@@ -956,7 +961,7 @@ async function mgrSaveConv(){
     date: now.toLocaleDateString('fr-FR'),
     time: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
     preview: chatHistory[0].content.substring(0,60),
-    message: chatHistory.slice(),
+    messages: chatHistory.slice(),
     rating: currentRating || null
   };
   try{
@@ -1019,7 +1024,7 @@ async function mgrGenFiche(idx, btn){
   var conv = mgrConversations[idx];
   btn.textContent = 'Génération en cours...';
   btn.disabled = true;
-  var msgs = conv.message || conv.messages || [];
+  var msgs = conv.messages || [];
   var prompt = "Genere une fiche dossier structuree. Sections : MOTIF DE CONTACT, RESUME, ACTIONS, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : " +
     msgs.map(function(m){return (m.role==='user'?'Client':'Free Bot')+' : '+m.content;}).join(' | ');
   try{

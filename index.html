@@ -654,7 +654,7 @@ async function sendMessage(){
   chatHistory.push({role:'user',content:msg});
   isTyping=true;document.getElementById('send-btn').disabled=true;showTyping();
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',max_tokens:1000,
@@ -708,7 +708,7 @@ async function genFiche(){
   var conv=chatHistory.map(function(m){return (m.role==="user"?"Client":"Free Bot")+" : "+m.content;}).join(" | ");
   var prompt="Genere une fiche dossier structuree pour cette conversation. Sections : MOTIF DE CONTACT, RESUME DE LA DEMANDE, ACTIONS EFFECTUEES, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : "+conv;
   try{
-    var res=await fetch("https://api.anthropic.com/v1/messages",{
+    var res=await fetch("/api/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({

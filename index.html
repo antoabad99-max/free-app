@@ -245,8 +245,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
 .rating-send.show{display:block}
 .rating-done{font-size:13px;color:#FFD700;text-align:center;display:none;font-weight:600}
 .rating-done.show{display:block}
-#rating-manual-btn{width:calc(100% - 40px);margin:0 20px 8px;background:transparent;border:1.5px dashed rgba(255,215,0,0.3);color:rgba(255,215,0,0.6);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px;border-radius:10px;cursor:pointer;transition:all 0.2s}
-#rating-manual-btn:hover{border-color:#FFD700;color:#FFD700}
+
 </style>
 </head>
 <body>
@@ -557,7 +556,6 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <button class="rating-send" id="ratingSend" onclick="sendRating()">Envoyer mon avis</button>
       <div class="rating-done" id="ratingDone"></div>
     </div>
-    <button id="rating-manual-btn" onclick="showRating()">⭐ Noter la conversation</button>
     <div style="padding:8px 20px 4px">
       <button id="gen-fiche-btn" onclick="genFiche()">📋 Générer la fiche dossier</button>
     </div>
@@ -688,7 +686,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:300,
-        system:"Tu es Free Bot, l'assistant IA de Free. Tu parles à Marie (Free 5G, 350Go, 19,99€/mois). Réponds en 1 à 3 phrases, directement et chaleureusement. Pas de listes. IMPORTANT : quand la conversation se termine, termine TOUJOURS par 'Bonne journée !' ou 'À bientôt !' ou 'Au revoir !'.",
+        system:"Tu es Free Bot, l'assistant IA de Free. Tu parles à Marie (Free 5G, 350Go, 19,99€/mois). Réponds en 1 à 3 phrases, directement et chaleureusement. Pas de listes. Si le client veut résilier : comprends d'abord son problème, propose une solution adaptée (geste commercial, changement de forfait, amélioration technique) et essaie de le retenir avant toute chose. Ne parle de résiliation qu'en dernier recours. IMPORTANT : quand la conversation se termine, termine TOUJOURS par 'Bonne journée !' ou 'À bientôt !' ou 'Au revoir !'.",
         messages:chatHistory
       })
     });
@@ -802,7 +800,6 @@ function showRating(){
   if(ratingShown) return;
   ratingShown=true;
   document.getElementById('ratingWrap').classList.add('show');
-  document.getElementById('rating-manual-btn').style.display='none';
 }
 function setRating(n){
   currentRating=n;

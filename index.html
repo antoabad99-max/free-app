@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free — Espace Abonné</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --red:#e2001a;--red2:#c0001a;--green:#4caf50;
+  --black:#0d0d0d;--dark:#1a1a1a;--dark2:#222;--dark3:#2a2a2a;
+  --border:#333;--border2:#3a3a3a;--grey:#888;--lgrey:#f5f5f5;
+  --white:#fff;--text:#f0f0f0;--subtext:#999;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);min-height:100vh}
+.app-wrapper{max-width:440px;margin:0 auto;min-height:100vh;background:var(--black);position:relative}
+.top-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.top-bar-logo{font-family:'Pacifico',cursive;font-size:28px;color:var(--red);letter-spacing:-0.5px}
+.top-bar-link{font-size:13px;color:var(--grey);font-weight:500;cursor:pointer}
+.back-btn{font-size:20px;color:var(--text);cursor:pointer;padding:4px 8px 4px 0}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:var(--dark);border-top:1px solid var(--border);display:flex;padding:10px 0 20px;z-index:50;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:color 0.2s}
+.bnav-icon{font-size:22px}
+.bnav-label{font-size:10px;font-weight:500;color:var(--grey)}
+.bnav-item.active .bnav-label{color:var(--red)}
+.page{display:none;padding-bottom:90px}
+.page.active{display:block}
+
+/* ACCUEIL */
+.home-header{background:var(--dark);padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+.home-greeting{font-size:26px;font-weight:700;color:var(--white);margin-bottom:2px}
+.home-num{font-size:14px;color:var(--grey)}
+.home-box-btn{display:flex;align-items:center;justify-content:space-between;background:var(--dark3);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;margin-top:14px;cursor:pointer;transition:border-color 0.2s;}
+.home-box-btn:hover{border-color:var(--red)}
+.home-box-label{font-size:14px;font-weight:600;color:var(--text)}
+.home-box-sub{font-size:12px;color:var(--grey);margin-top:2px}
+.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px}
+.home-card{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:18px 16px;cursor:pointer;transition:border-color 0.2s;}
+.home-card:hover{border-color:var(--red)}
+.home-card-title{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.home-card-sub{font-size:12px;color:var(--grey);margin-top:6px}
+.home-card-val{font-size:20px;font-weight:700;color:var(--red);margin-top:8px}
+.mini-bar{height:5px;background:var(--dark3);border-radius:3px;margin-top:10px;overflow:hidden}
+.mini-bar-fill{height:100%;background:var(--green);border-radius:3px}
+.home-promo{margin:0 20px 16px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#1a0005,#300010);border:1px solid rgba(226,0,26,0.3);padding:20px;}
+.promo-badge{display:inline-block;background:var(--red);color:var(--white);font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.promo-title{font-size:18px;font-weight:700;color:var(--white)}
+.promo-price{font-size:32px;font-weight:800;color:var(--red);margin-top:6px}
+.promo-price sup{font-size:16px;vertical-align:super}
+.promo-price span{font-size:14px;font-weight:400;color:var(--grey)}
+.promo-desc{font-size:12px;color:var(--grey);margin-top:6px}
+.promo-btn{display:inline-block;margin-top:14px;background:var(--red);color:var(--white);font-size:13px;font-weight:700;padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+
+/* CONSO */
+.page-header{padding:16px 20px 0;display:flex;align-items:center;gap:8px}
+.page-title{font-size:18px;font-weight:700;color:var(--white)}
+.conso-period{padding:0 20px;margin-top:12px;margin-bottom:16px}
+.conso-period p{font-size:13px;color:var(--grey);line-height:1.5}
+.conso-tabs{display:flex;margin:0 20px 20px;background:var(--dark3);border-radius:10px;padding:4px;gap:4px}
+.conso-tab{flex:1;padding:9px;text-align:center;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;transition:all 0.2s;color:var(--grey)}
+.conso-tab.active{background:var(--white);color:var(--black);font-weight:600}
+.conso-block{margin:0 20px 14px;background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.conso-block-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.conso-icon{font-size:20px;color:var(--red)}
+.conso-block-title{font-size:17px;font-weight:700;color:var(--white)}
+.conso-block-sub{font-size:13px;color:var(--grey);margin-bottom:4px;padding-left:30px}
+.conso-detail{font-size:12px;color:var(--grey);padding-left:30px;margin-bottom:2px}
+.conso-val{font-size:13px;font-weight:600;color:var(--text);text-align:right;margin-bottom:8px}
+.conso-bar{height:7px;background:var(--dark3);border-radius:4px;overflow:hidden;margin-top:10px}
+.conso-bar-fill{height:100%;background:var(--green);border-radius:4px;transition:width 1s ease}
+.conso-unlimited{font-size:13px;font-weight:600;color:var(--text);text-align:right;margin-top:6px}
+
+/* FACTURES */
+.factures-page{padding:0 20px}
+.fact-recap{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:16px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color 0.2s;}
+.fact-recap:hover{border-color:var(--red)}
+.fact-recap-label{font-size:14px;font-weight:600;color:var(--text)}
+.fact-arr{font-size:18px;color:var(--grey)}
+.fact-hist-title{font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px}
+.fact-hist-num{font-size:13px;color:var(--grey);margin-bottom:4px}
+.fact-hist-note{font-size:12px;color:var(--grey);margin-bottom:16px;line-height:1.5}
+.fact-last-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.fact-last-icon{width:32px;height:32px;background:rgba(226,0,26,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.fact-last-label{font-size:14px;font-weight:700;color:var(--text)}
+.fact-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.fact-row:last-child{border-bottom:none}
+.fact-row-date{font-size:14px;font-weight:500;color:var(--text)}
+.fact-row-amount{font-size:14px;font-weight:600;color:var(--text)}
+.badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-paid{background:rgba(76,175,80,0.15);color:var(--green)}
+.badge-refund{background:rgba(76,175,80,0.15);color:var(--green)}
+.badge-due{background:rgba(226,0,26,0.15);color:var(--red)}
+.badge-cancel{background:rgba(150,150,150,0.15);color:var(--grey)}
+
+/* MON COMPTE */
+.account-page{padding:0 20px}
+.account-header{padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.account-name{font-size:22px;font-weight:700;color:var(--white)}
+.account-num{font-size:14px;color:var(--grey);margin-top:4px}
+.account-forfait{background:linear-gradient(135deg,#1a0005,#280010);border:1px solid rgba(226,0,26,0.3);border-radius:14px;padding:20px;margin-bottom:16px;}
+.af-label{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--grey);text-transform:uppercase;margin-bottom:6px}
+.af-name{font-size:20px;font-weight:800;color:var(--white)}
+.af-detail{font-size:13px;color:var(--grey);margin-top:4px}
+.af-price{font-size:28px;font-weight:800;color:var(--red);margin-top:10px}
+.af-price span{font-size:14px;font-weight:400;color:var(--grey)}
+.btn-change{display:inline-block;margin-top:14px;background:transparent;color:var(--red);font-size:13px;font-weight:700;padding:8px 18px;border-radius:8px;border:1.5px solid var(--red);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.btn-change:hover{background:var(--red);color:var(--white)}
+.account-menu{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.account-menu-item{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.2s;}
+.account-menu-item:last-child{border-bottom:none}
+.account-menu-item:hover{background:var(--dark3)}
+.ami-left{display:flex;align-items:center;gap:12px}
+.ami-icon{font-size:18px;width:24px;text-align:center}
+.ami-label{font-size:14px;font-weight:500;color:var(--text)}
+.ami-arr{font-size:18px;color:var(--grey)}
+.logout-row{margin-top:16px;padding-bottom:8px}
+.btn-logout{width:100%;background:transparent;border:1.5px solid var(--border);color:var(--grey);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:13px;border-radius:12px;cursor:pointer;transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+
+/* REGLAGES */
+.settings-page{padding:0 20px}
+.settings-section{margin:16px 0}
+.settings-section-title{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--grey);text-transform:uppercase;margin-bottom:10px;padding:0 4px}
+.settings-group{border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.2s;}
+.settings-item:last-child{border-bottom:none}
+.settings-item:hover{background:var(--dark3)}
+.si-label{font-size:14px;font-weight:500;color:var(--text)}
+.si-sub{font-size:12px;color:var(--grey);margin-top:2px}
+.si-arr{font-size:16px;color:var(--grey)}
+.si-val{font-size:13px;color:var(--grey);margin-right:8px}
+.toggle{width:44px;height:26px;background:var(--dark3);border-radius:13px;position:relative;cursor:pointer;transition:background 0.3s;border:1px solid var(--border2);flex-shrink:0}
+.toggle.on{background:var(--red);border-color:var(--red)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:var(--white);border-radius:50%;transition:left 0.3s}
+.toggle.on::after{left:21px}
+
+/* CHATBOT */
+.chatbot-wrap{padding:0}
+.chat-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;}
+.chat-av{width:38px;height:38px;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.chat-info h3{font-size:15px;font-weight:700;color:var(--white)}
+.chat-info p{font-size:11px;color:var(--grey)}
+.rb-wrap{display:flex;align-items:center;justify-content:center;position:relative}
+.rb-wrap svg{animation:rbIdle 3s ease-in-out infinite;transform-origin:center center}
+.rb-wrap.thinking svg{animation:rbSpin 0.9s linear infinite;transform-origin:center center}
+@keyframes rbIdle{
+  0%,100%{transform:rotateY(0deg) scale(1);filter:drop-shadow(0 0 4px #e2001a)}
+  25%{transform:rotateY(20deg) scale(1.05);filter:drop-shadow(0 0 8px #ff4466)}
+  50%{transform:rotateY(0deg) scale(1);filter:drop-shadow(0 0 4px #e2001a)}
+  75%{transform:rotateY(-20deg) scale(1.05);filter:drop-shadow(0 0 8px #ff4466)}
+}
+@keyframes rbSpin{
+  0%{transform:rotate(0deg);filter:drop-shadow(0 0 6px #e2001a)}
+  100%{transform:rotate(360deg);filter:drop-shadow(0 0 10px #ff4466)}
+}
+.chat-voice-btn{margin-left:auto;background:transparent;border:1px solid var(--border2);color:var(--grey);font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:5px}
+.chat-voice-btn.on{border-color:var(--red);color:var(--red)}
+.voice-dot{width:7px;height:7px;background:var(--red);border-radius:50%;display:none}
+.chat-voice-btn.on .voice-dot{display:block;animation:vdot 1s infinite}
+@keyframes vdot{0%,100%{opacity:1}50%{opacity:0.2}}
+.chat-messages{height:calc(100vh - 260px);min-height:300px;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:var(--black);}
+.c-msg{display:flex;gap:10px;max-width:92%}
+.c-msg.user{align-self:flex-end;flex-direction:row-reverse}
+.c-bubble{padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.55}
+.c-msg.coral .c-bubble{background:var(--dark);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px}
+.c-msg.user .c-bubble{background:var(--red);color:var(--white);border-bottom-right-radius:4px}
+.c-av-sm{width:28px;height:28px;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end}
+.c-logo-wrap{display:flex;justify-content:flex-start;margin-top:5px;padding-left:2px;min-height:18px}
+.c-logo-static{font-family:'Pacifico',cursive;font-size:11px;color:var(--red);opacity:0.5}
+.c-dot{width:6px;height:6px;background:var(--red);border-radius:50%;animation:dp 1s infinite}
+.c-dot:nth-child(2){animation-delay:0.2s}
+.c-dot:nth-child(3){animation-delay:0.4s}
+@keyframes dp{0%,100%{transform:scale(1);opacity:0.4}50%{transform:scale(1.5);opacity:1}}
+.chat-chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px 20px;border-top:1px solid var(--border);background:var(--dark)}
+.chip{background:var(--dark3);border:1px solid var(--border2);color:var(--text);font-size:12px;padding:6px 12px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;white-space:nowrap}
+.chip:hover{border-color:var(--red);color:var(--red)}
+.chat-input-row{display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--border);background:var(--dark)}
+#chat-input{flex:1;background:var(--dark3);border:1.5px solid var(--border2);border-radius:22px;padding:10px 16px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;color:var(--text)}
+#chat-input:focus{border-color:var(--red)}
+#chat-input::placeholder{color:var(--grey)}
+#send-btn{background:var(--red);color:var(--white);border:none;width:40px;height:40px;border-radius:50%;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+#send-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+/* LOGIN */
+.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:var(--black);}
+.login-logo{font-family:'Pacifico',cursive;font-size:52px;color:var(--red);margin-bottom:10px}
+.login-tagline{font-size:14px;color:var(--grey);margin-bottom:40px;text-align:center}
+.login-choice{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px}
+.login-option{background:var(--dark);border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color 0.2s;}
+.login-option:hover{border-color:var(--red)}
+.lo-left{display:flex;align-items:center;gap:12px}
+.lo-icon{width:36px;height:36px;background:rgba(226,0,26,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.lo-label{font-size:15px;font-weight:600;color:var(--text)}
+.lo-sub{font-size:12px;color:var(--grey);margin-top:2px}
+.lo-arr{font-size:20px;color:var(--grey)}
+.login-form{display:none;min-height:100vh;padding:40px 24px;background:var(--black);flex-direction:column}
+.login-form.visible{display:flex}
+.lf-back{font-size:22px;cursor:pointer;color:var(--text);margin-bottom:28px;display:inline-block}
+.lf-title{font-family:'Pacifico',cursive;font-size:36px;color:var(--red);margin-bottom:6px}
+.lf-sub{font-size:14px;color:var(--grey);margin-bottom:32px}
+.lf-field{background:var(--dark);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;margin-bottom:14px;width:100%;}
+.lf-field:focus{border-color:var(--red)}
+.lf-field::placeholder{color:var(--grey)}
+.btn-connect{width:100%;background:var(--red);color:var(--white);border:none;padding:15px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+.lf-forgot{display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--grey)}
+.lf-forgot a{color:var(--red);text-decoration:none;font-weight:600}
+
+/* MICRO */
+#mic-btn{background:var(--dark3);border:1.5px solid var(--border2);color:var(--grey);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+#mic-btn.rec{background:var(--red);border-color:var(--red);color:var(--white);animation:micPulse 0.8s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(226,0,26,0.4)}50%{box-shadow:0 0 0 8px rgba(226,0,26,0)}}
+
+/* FICHE DOSSIER */
+.fiche-wrap{margin:0 20px 14px;border:1.5px solid var(--red);border-radius:14px;overflow:hidden;background:var(--dark)}
+.fiche-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:#1f0005}
+.fiche-title{font-size:13px;font-weight:700;color:var(--red);letter-spacing:0.5px}
+.fiche-btns{display:flex;gap:6px}
+.fiche-btn{background:transparent;border:1px solid var(--border2);color:var(--grey);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+.fiche-btn:hover{border-color:var(--red);color:var(--red)}
+.fiche-body{padding:14px 16px;font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto}
+.fiche-body.collapsed{display:none}
+#gen-fiche-btn{width:calc(100% - 40px);margin:0 20px 12px;background:transparent;border:1.5px dashed var(--border2);color:var(--grey);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer;transition:all 0.2s}
+#gen-fiche-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* MODAL PLEIN ECRAN */
+.fiche-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;padding:20px}
+.fiche-modal.open{display:flex}
+.fiche-modal-box{background:var(--dark);border:1.5px solid var(--red);border-radius:16px;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden}
+.fiche-modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:#1f0005;flex-shrink:0}
+.fiche-modal-title{font-size:14px;font-weight:700;color:var(--red)}
+.fiche-modal-btns{display:flex;gap:8px}
+.fiche-modal-body{padding:18px;font-size:14px;color:var(--text);line-height:1.7;white-space:pre-wrap;overflow-y:auto;flex:1}
+</style>
+</head>
+<body>
+<div class="app-wrapper" id="appWrapper">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-logo">free</div>
+  <div class="login-tagline">Bienvenue · Connectez-vous à votre Espace Abonné</div>
+  <div class="login-choice">
+    <div class="login-option" onclick="showLoginForm()">
+      <div class="lo-left">
+        <div class="lo-icon">📱</div>
+        <div>
+          <div class="lo-label">Espace Abonné <span style="color:var(--red)">Mobile</span></div>
+          <div class="lo-sub">Forfaits Free Mobile</div>
+        </div>
+      </div>
+      <div class="lo-arr">›</div>
+    </div>
+    <div class="login-option" onclick="showLoginForm()">
+      <div class="lo-left">
+        <div class="lo-icon">📡</div>
+        <div>
+          <div class="lo-label">Espace Abonné <span style="color:var(--red)">Freebox</span></div>
+          <div class="lo-sub">Box Internet &amp; TV</div>
+        </div>
+      </div>
+      <div class="lo-arr">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN FORM -->
+<div id="loginForm" class="login-form">
+  <span class="lf-back" onclick="backToChoice()">‹</span>
+  <div class="lf-title">free</div>
+  <div class="lf-sub">Connexion à votre espace mobile</div>
+  <input class="lf-field" type="text" placeholder="Identifiant ou numéro de téléphone">
+  <input class="lf-field" type="password" placeholder="Mot de passe">
+  <button class="btn-connect" onclick="doLogin()">Se connecter</button>
+  <span class="lf-forgot"><a href="#">Identifiant ou mot de passe oublié ?</a></span>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" style="display:none">
+  <div class="top-bar" id="topBar">
+    <div class="top-bar-logo">free</div>
+    <div class="top-bar-link" id="topBarRight">Freebox ›</div>
+  </div>
+
+  <!-- ACCUEIL -->
+  <div class="page active" id="page-home">
+    <div class="home-header">
+      <div class="home-greeting">Bonjour Marie</div>
+      <div class="home-num">07 77 77 77 77</div>
+      <div class="home-box-btn">
+        <div>
+          <div class="home-box-label">Freebox Ultra</div>
+          <div class="home-box-sub">Fibre 10 Gbps · Actif</div>
+        </div>
+        <div>›</div>
+      </div>
+    </div>
+    <div class="home-cards">
+      <div class="home-card" onclick="showPage('factures')">
+        <div class="home-card-title">🧾 Facture</div>
+        <div class="home-card-sub">Mai 2026</div>
+        <div class="home-card-val">19,99€</div>
+        <div style="font-size:16px;color:var(--grey);margin-top:4px">›</div>
+      </div>
+      <div class="home-card" onclick="showPage('conso')">
+        <div class="home-card-title">📶 Consomm.</div>
+        <div class="home-card-sub">Internet · 5G</div>
+        <div class="home-card-val">187 Go</div>
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:53%"></div></div>
+      </div>
+    </div>
+    <div class="home-promo">
+      <div class="promo-badge">OFFRE EXCLUSIVE</div>
+      <div class="promo-title">Forfait Mobile + Freebox</div>
+      <div class="promo-price"><sup>€</sup>9<sup>,99</sup> <span>/mois</span></div>
+      <div class="promo-desc">Pour les abonnés Freebox. Sans engagement.</div>
+      <button class="promo-btn">En profiter</button>
+    </div>
+  </div>
+
+  <!-- CONSO -->
+  <div class="page" id="page-conso">
+    <div class="page-header">
+      <span class="back-btn" onclick="showPage('home')">‹</span>
+      <div class="page-title">Ma consommation</div>
+    </div>
+    <div class="conso-period">
+      <p>Période du 24/04 au 25/05.<br>Votre forfait sera remis à zéro le 24 mai 2026.</p>
+    </div>
+    <div class="conso-tabs">
+      <div class="conso-tab active" onclick="switchConsoTab(this,'france')">En France</div>
+      <div class="conso-tab" onclick="switchConsoTab(this,'etranger')">À l'étranger</div>
+    </div>
+    <div id="conso-france">
+      <div class="conso-block">
+        <div class="conso-block-head"><span class="conso-icon">📶</span><span class="conso-block-title">Internet</span></div>
+        <div class="conso-block-sub">En France métropolitaine en 5G/4G</div>
+        <div class="conso-val">187 Go / Illimité</div>
+        <div class="conso-bar"><div class="conso-bar-fill" style="width:53%"></div></div>
+      </div>
+      <div class="conso-block">
+        <div class="conso-block-head"><span class="conso-icon">📞</span><span class="conso-block-title">Appels</span></div>
+        <div class="conso-block-sub">En France métropolitaine</div>
+        <div class="conso-detail">Vers la France : 3h42</div>
+        <div class="conso-detail">Vers l'international : 0s</div>
+        <div class="conso-unlimited">Illimité</div>
+        <div class="conso-bar"><div class="conso-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="conso-block">
+        <div class="conso-block-head"><span class="conso-icon">💬</span><span class="conso-block-title">SMS / MMS</span></div>
+        <div class="conso-block-sub">En France métropolitaine</div>
+        <div class="conso-detail">SMS : 24</div>
+        <div class="conso-detail">MMS : 2</div>
+        <div class="conso-unlimited">Illimité</div>
+        <div class="conso-bar"><div class="conso-bar-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div id="conso-etranger" style="display:none">
+      <div class="conso-block">
+        <div class="conso-block-head"><span class="conso-icon">🌍</span><span class="conso-block-title">Internet Europe</span></div>
+        <div class="conso-block-sub">Dans les pays de l'UE et DOM</div>
+        <div class="conso-val">4,2 Go / 35 Go</div>
+        <div class="conso-bar"><div class="conso-bar-fill" style="width:12%"></div></div>
+      </div>
+      <div class="conso-block">
+        <div class="conso-block-head"><span class="conso-icon">📞</span><span class="conso-block-title">Appels depuis l'étranger</span></div>
+        <div class="conso-block-sub">Vers la France et locaux UE</div>
+        <div class="conso-detail">Vers la France : 12min</div>
+        <div class="conso-unlimited">Illimité</div>
+        <div class="conso-bar"><div class="conso-bar-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FACTURES -->
+  <div class="page" id="page-factures">
+    <div class="page-header">
+      <span class="back-btn" onclick="showPage('compte')">‹</span>
+      <div class="page-title">Mes factures</div>
+    </div>
+    <div class="factures-page">
+      <div class="fact-recap">
+        <div class="fact-recap-label">Récapitulatif facture de vos lignes</div>
+        <div class="fact-arr">›</div>
+      </div>
+      <div class="fact-hist-title">Historique de mes factures</div>
+      <div class="fact-hist-num">Pour la ligne : 07 77 77 77 77</div>
+      <div class="fact-hist-note">Seules les 12 dernières factures sont conservées sur votre Espace Abonné, pensez à les télécharger.</div>
+      <div class="fact-last-header">
+        <div class="fact-last-icon">🧾</div>
+        <div class="fact-last-label">Dernière facture</div>
+      </div>
+      <div class="fact-row"><span class="fact-row-date">Mai 2026</span><span class="badge badge-paid">Payée</span><span class="fact-row-amount">19,99€</span></div>
+      <div class="fact-row"><span class="fact-row-date">Avril 2026</span><span class="badge badge-refund">Remboursée</span><span class="fact-row-amount">0,00€</span></div>
+      <div class="fact-row"><span class="fact-row-date">Mars 2026</span><span class="badge badge-paid">Payée</span><span class="fact-row-amount">19,99€</span></div>
+      <div class="fact-row"><span class="fact-row-date">Février 2026</span><span class="badge badge-due">À payer</span><span class="fact-row-amount">0,00€</span></div>
+      <div class="fact-row"><span class="fact-row-date">Janvier 2026</span><span class="badge badge-cancel">Annulée</span><span class="fact-row-amount">0,00€</span></div>
+      <div class="fact-row"><span class="fact-row-date">Décembre 2025</span><span class="badge badge-paid">Payée</span><span class="fact-row-amount">19,99€</span></div>
+    </div>
+  </div>
+
+  <!-- MON COMPTE -->
+  <div class="page" id="page-compte">
+    <div class="account-page">
+      <div class="account-header">
+        <div class="account-name">Marie Dupont</div>
+        <div class="account-num">07 77 77 77 77</div>
+      </div>
+      <div class="account-forfait">
+        <div class="af-label">Mon forfait</div>
+        <div class="af-name">Free 5G — 350 Go</div>
+        <div class="af-detail">5G illimitée en France · Roaming 115 pays</div>
+        <div class="af-price">19,99€ <span>/mois · sans engagement</span></div>
+        <button class="btn-change">Détail de mon forfait ›</button>
+      </div>
+      <div class="account-menu">
+        <div class="account-menu-item" onclick="showPage('conso')">
+          <div class="ami-left"><span class="ami-icon">📊</span><span class="ami-label">Ma consommation</span></div>
+          <span class="ami-arr">›</span>
+        </div>
+        <div class="account-menu-item" onclick="showPage('factures')">
+          <div class="ami-left"><span class="ami-icon">🧾</span><span class="ami-label">Mes factures</span></div>
+          <span class="ami-arr">›</span>
+        </div>
+        <div class="account-menu-item">
+          <div class="ami-left"><span class="ami-icon">📱</span><span class="ami-label">Gérer ma SIM / eSIM</span></div>
+          <span class="ami-arr">›</span>
+        </div>
+        <div class="account-menu-item">
+          <div class="ami-left"><span class="ami-icon">🔑</span><span class="ami-label">Modifier mon mot de passe</span></div>
+          <span class="ami-arr">›</span>
+        </div>
+        <div class="account-menu-item" onclick="showPage('chatbot')">
+          <div class="ami-left"><span class="ami-icon">❌</span><span class="ami-label">Demande de résiliation</span></div>
+          <span class="ami-arr">›</span>
+        </div>
+      </div>
+      <div class="logout-row">
+        <button class="btn-logout" onclick="doLogout()">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGLAGES -->
+  <div class="page" id="page-reglages">
+    <div class="settings-page">
+      <div style="padding:20px 4px 10px"><div style="font-size:20px;font-weight:700;color:var(--white)">Réglages</div></div>
+      <div class="settings-section">
+        <div class="settings-section-title">Notifications</div>
+        <div class="settings-group">
+          <div class="settings-item">
+            <div><div class="si-label">Factures</div><div class="si-sub">Nouvelle facture disponible</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-item">
+            <div><div class="si-label">Consommation</div><div class="si-sub">Alerte seuil de data</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-item">
+            <div><div class="si-label">Offres Free</div><div class="si-sub">Promotions et nouveautés</div></div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Application</div>
+        <div class="settings-group">
+          <div class="settings-item">
+            <div><div class="si-label">Face ID / Touch ID</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-item">
+            <div><div class="si-label">Langue</div></div>
+            <div style="display:flex;align-items:center"><span class="si-val">Français</span><span class="si-arr">›</span></div>
+          </div>
+          <div class="settings-item">
+            <div><div class="si-label">Version</div></div>
+            <span class="si-val">3.2.1</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Support</div>
+        <div class="settings-group">
+          <div class="settings-item" onclick="showPage('chatbot')">
+            <div><div class="si-label">🤖 Free Bot</div></div>
+            <span class="si-arr">›</span>
+          </div>
+          <div class="settings-item">
+            <div><div class="si-label">Appeler le 3244</div></div>
+            <span class="si-arr">›</span>
+          </div>
+          <div class="settings-item">
+            <div><div class="si-label">Mentions légales</div></div>
+            <span class="si-arr">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHATBOT CORAL -->
+  <div class="page" id="page-chatbot">
+    <div class="chat-header">
+      <div class="chat-av"><div class="rb-wrap" id="rbMain"><svg width="38" height="38" viewBox="0 0 38 38"><circle cx="19" cy="19" r="18" fill="#1a1a1a" stroke="#e2001a" stroke-width="2"/><text x="19" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#e2001a">F</text></svg></div></div>
+      <div class="chat-info">
+        <h3>Free Bot</h3>
+        <p>Assistant IA · Free · Disponible 24h/24</p>
+      </div>
+      <button class="chat-voice-btn" id="voiceBtn" onclick="toggleVoice()">
+        <div class="voice-dot"></div>
+        <span id="voiceLabel">🔇 Voix</span>
+      </button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="c-msg coral">
+        <div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div>
+        <div>
+          <div class="c-bubble">Bonjour Marie ! Je suis Free Bot, l'assistant IA de Free<br>Comment puis-je vous aider ?</div>
+          <div class="c-logo-wrap"><span class="c-logo-static">free</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-chips">
+      <div class="chip" onclick="sendChip('Je veux changer de forfait')">Changer de forfait</div>
+      <div class="chip" onclick="sendChip('Quelle est ma consommation ?')">Ma conso</div>
+      <div class="chip" onclick="sendChip('Comment résilier mon abonnement ?')">Résilier</div>
+      <div class="chip" onclick="sendChip('Problème réseau')">Réseau</div>
+      <div class="chip" onclick="sendChip('Télécharger ma facture')">Facture</div>
+    </div>
+    <div style="padding:8px 20px 4px">
+      <button id="gen-fiche-btn" onclick="genFiche()">📋 Générer la fiche dossier</button>
+    </div>
+    <div id="ficheWrap" class="fiche-wrap" style="display:none">
+      <div class="fiche-header">
+        <span class="fiche-title">📋 FICHE DOSSIER</span>
+        <div class="fiche-btns">
+          <button class="fiche-btn" id="ficheMinBtn" onclick="toggleFiche()">— Réduire</button>
+          <button class="fiche-btn" onclick="expandFiche()">⛶ Agrandir</button>
+          <button class="fiche-btn" onclick="copyFiche()">📋 Copier</button>
+        </div>
+      </div>
+      <div class="fiche-body" id="ficheBody"></div>
+    </div>
+    <div class="chat-input-row">
+      <button id="mic-btn" onclick="toggleMic()" title="Micro">🎙️</button>
+      <input id="chat-input" type="text" placeholder="Posez votre question…" onkeydown="if(event.key==='Enter')sendMessage()">
+      <button id="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+    <!-- MODAL PLEIN ECRAN -->
+    <div class="fiche-modal" id="ficheModal" onclick="closeFicheModal(event)">
+      <div class="fiche-modal-box">
+        <div class="fiche-modal-header">
+          <span class="fiche-modal-title">📋 FICHE DOSSIER</span>
+          <div class="fiche-modal-btns">
+            <button class="fiche-btn" onclick="copyFicheModal()">📋 Copier</button>
+            <button class="fiche-btn" onclick="closeFicheModal()">✕ Fermer</button>
+          </div>
+        </div>
+        <div class="fiche-modal-body" id="ficheModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="bnav-item active" id="bnav-home" onclick="showPage('home')">
+      <div class="bnav-icon">🏠</div>
+      <div class="bnav-label">Accueil</div>
+    </div>
+    <div class="bnav-item" id="bnav-compte" onclick="showPage('compte')">
+      <div class="bnav-icon">👤</div>
+      <div class="bnav-label">Mon Compte</div>
+    </div>
+    <div class="bnav-item" id="bnav-chatbot" onclick="showPage('chatbot')">
+      <div class="bnav-icon" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="13" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-weight="700" fill="#e2001a">F</text></svg></div>
+      <div class="bnav-label">Free Bot</div>
+    </div>
+    <div class="bnav-item" id="bnav-reglages" onclick="showPage('reglages')">
+      <div class="bnav-icon">⚙️</div>
+      <div class="bnav-label">Réglages</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const pages=['home','conso','factures','compte','reglages','chatbot'];
+const bnavIds=['home','compte','chatbot','reglages'];
+function showPage(id){
+  pages.forEach(p=>{const el=document.getElementById('page-'+p);if(el)el.classList.toggle('active',p===id);});
+  bnavIds.forEach(k=>{const el=document.getElementById('bnav-'+k);if(el)el.classList.toggle('active',k===id);});
+  window.scrollTo(0,0);
+}
+function switchConsoTab(el,tab){
+  document.querySelectorAll('.conso-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('conso-france').style.display=tab==='france'?'block':'none';
+  document.getElementById('conso-etranger').style.display=tab==='etranger'?'block':'none';
+}
+function showLoginForm(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('loginForm').classList.add('visible');
+}
+function backToChoice(){
+  document.getElementById('loginForm').classList.remove('visible');
+  document.getElementById('loginScreen').style.display='flex';
+}
+function doLogin(){
+  document.getElementById('loginForm').classList.remove('visible');
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appShell').style.display='block';
+}
+function doLogout(){
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  showPage('home');
+}
+let chatHistory=[],isTyping=false,voiceOn=false;
+function toggleVoice(){
+  voiceOn=!voiceOn;
+  document.getElementById('voiceBtn').classList.toggle('on',voiceOn);
+  document.getElementById('voiceLabel').textContent=voiceOn?'🔊 Voix':'🔇 Voix';
+  if(voiceOn)speak('La voix de Free Bot est activée.');
+}
+function speak(t){if(!voiceOn||!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';window.speechSynthesis.speak(u);}
+function addMsg(role,text){
+  const wrap=document.getElementById('chatMessages');
+  const div=document.createElement('div');
+  div.className='c-msg '+(role==='user'?'user':'coral');
+  if(role==='user'){
+    div.innerHTML='<div class="c-av-sm" style="background:var(--dark3);font-size:12px;font-weight:700">M</div><div><div class="c-bubble">'+text+'</div></div>';
+  }else{
+    div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="c-logo-wrap"><span class="c-logo-static">free</span></div></div>';
+    if(voiceOn)speak(text);
+  }
+  wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+}
+function showTyping(){
+  document.querySelectorAll('.rb-wrap').forEach(r=>r.classList.add('thinking'));
+  const wrap=document.getElementById('chatMessages');
+  const div=document.createElement('div');div.className='c-msg coral';div.id='typing-ind';
+  div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble"><div style="display:flex;gap:4px;align-items:center"><div class="c-dot"></div><div class="c-dot"></div><div class="c-dot"></div></div></div></div>';
+  wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typing-ind');if(t)t.remove();
+  document.querySelectorAll('.rb-wrap').forEach(r=>r.classList.remove('thinking'));}
+function sendChip(txt){document.getElementById('chat-input').value=txt;sendMessage();}
+async function sendMessage(){
+  if(isTyping)return;
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();if(!msg)return;
+  input.value='';addMsg('user',msg);
+  chatHistory.push({role:'user',content:msg});
+  isTyping=true;document.getElementById('send-btn').disabled=true;showTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:"Tu es Free Bot, l'assistant IA de Free, un opérateur télécom français. Tu parles à Marie (forfait Free 5G, 350 Go, 19,99€/mois, numéro 07 77 77 77 77). Offres : Starter 2€ (2h+50Mo), Série 9,99€ (140Go), Free 5G 19,99€ (350Go), Free Max 29,99€ (illimité). Box : Freebox Pop 29,99€ (1Gbps), Freebox Ultra 49,99€ (10Gbps). Réponds en français, de façon concise et chaleureuse.",
+        messages:chatHistory
+      })
+    });
+    removeTyping();
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'Désolé, une erreur est survenue.';
+    chatHistory.push({role:'assistant',content:reply});addMsg('coral',reply);
+  }catch(e){removeTyping();addMsg('coral','Désolé, une erreur de connexion. Veuillez réessayer.');}
+  isTyping=false;document.getElementById('send-btn').disabled=false;
+}
+
+// ── MICRO ──
+let recognition=null;
+function toggleMic(){
+  const btn=document.getElementById('mic-btn');
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    alert('La reconnaissance vocale nécessite Chrome ou Edge.');return;
+  }
+  if(btn.classList.contains('rec')){
+    if(recognition)recognition.stop();
+    btn.classList.remove('rec');btn.textContent='🎙️';return;
+  }
+  recognition=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+  recognition.lang='fr-FR';recognition.continuous=false;recognition.interimResults=false;
+  btn.classList.add('rec');btn.textContent='🔴';
+  recognition.onresult=function(e){
+    const txt=e.results[0][0].transcript;
+    document.getElementById('chat-input').value=txt;
+    btn.classList.remove('rec');btn.textContent='🎙️';
+    sendMessage();
+  };
+  recognition.onerror=function(e){
+    btn.classList.remove('rec');btn.textContent='🎙️';
+    if(e.error==='not-allowed')alert('Autorisez le micro dans votre navigateur.');
+    else if(e.error==='no-speech')alert('Aucune voix détectée. Réessayez.');
+  };
+  recognition.onend=function(){btn.classList.remove('rec');btn.textContent='🎙️';};
+  recognition.start();
+}
+
+// ── FICHE DOSSIER ──
+let ficheVisible=true;
+async function genFiche(){
+  var btn=document.getElementById("gen-fiche-btn");
+  if(chatHistory.length<2){alert("Commencez une conversation avec Free Bot avant de generer la fiche.");return;}
+  btn.textContent="Generation en cours...";btn.disabled=true;
+  var conv=chatHistory.map(function(m){return (m.role==="user"?"Client":"Free Bot")+" : "+m.content;}).join(" | ");
+  var prompt="Genere une fiche dossier structuree pour cette conversation. Sections : MOTIF DE CONTACT, RESUME DE LA DEMANDE, ACTIONS EFFECTUEES, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : "+conv;
+  try{
+    var res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:800,
+        system:"Tu es un assistant qui cree des fiches dossier pour un operateur telecom. Reponds en francais avec une fiche claire et structuree.",
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    var data=await res.json();
+    var fiche=(data.content&&data.content[0])?data.content[0].text:"Erreur lors de la generation.";
+    document.getElementById("ficheBody").textContent=fiche;
+    document.getElementById("ficheModalBody").textContent=fiche;
+    document.getElementById("ficheWrap").style.display="block";
+    document.getElementById("ficheBody").classList.remove("collapsed");
+    ficheVisible=true;
+    document.getElementById("ficheMinBtn").textContent="Reduire";
+    btn.textContent="Regenerer la fiche";btn.disabled=false;
+  }catch(e){
+    btn.textContent="Generer la fiche dossier";btn.disabled=false;
+    alert("Erreur de connexion.");
+  }
+}
+
+function toggleFiche(){
+  ficheVisible=!ficheVisible;
+  document.getElementById('ficheBody').classList.toggle('collapsed',!ficheVisible);
+  document.getElementById('ficheMinBtn').textContent=ficheVisible?'— Réduire':'□ Agrandir';
+}
+function expandFiche(){
+  document.getElementById('ficheModal').classList.add('open');
+}
+function closeFicheModal(e){
+  if(!e||e.target===document.getElementById('ficheModal')){
+    document.getElementById('ficheModal').classList.remove('open');
+  }
+}
+function copyFiche(){
+  const txt=document.getElementById('ficheBody').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById('ficheMinBtn');
+    const prev=b.textContent;
+    const cb=document.querySelectorAll('.fiche-btn')[2];
+    cb.textContent='✅ Copié !';setTimeout(()=>{cb.textContent='📋 Copier';},2000);
+  });
+}
+function copyFicheModal(){
+  const txt=document.getElementById('ficheModalBody').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.querySelector('.fiche-modal-btns .fiche-btn');
+    b.textContent='✅ Copié !';setTimeout(()=>{b.textContent='📋 Copier';},2000);
+  });
+}
+
+</script>
+</body>
+</html>

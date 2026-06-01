@@ -246,6 +246,45 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
 .rating-done{font-size:13px;color:#FFD700;text-align:center;display:none;font-weight:600}
 .rating-done.show{display:block}
 
+
+/* ── MANAGER ── */
+.mgr-login-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:20px}
+.mgr-login-box{background:var(--dark);border:1.5px solid var(--border);border-radius:16px;padding:36px 28px;width:100%;max-width:360px;text-align:center}
+.mgr-login-icon{font-size:36px;margin-bottom:12px}
+.mgr-login-title{font-family:'Pacifico',cursive;font-size:22px;color:var(--red);margin-bottom:6px}
+.mgr-login-sub{font-size:13px;color:var(--grey);margin-bottom:28px}
+.mgr-hint{font-size:12px;color:var(--grey);margin-top:14px}
+.mgr-hint span{color:var(--red);font-weight:600}
+.mgr-dash{padding:20px;display:none}
+.mgr-dash.show{display:block}
+.mgr-dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.mgr-dash-title{font-size:18px;font-weight:700;color:var(--white)}
+.mgr-dash-title span{color:var(--red)}
+.mgr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.mgr-stat{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.mgr-stat-n{font-family:'Pacifico',cursive;font-size:26px;color:var(--red)}
+.mgr-stat-l{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--grey);text-transform:uppercase;margin-top:4px}
+.mgr-section{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.mgr-section-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.mgr-conv-item{border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
+.mgr-conv-item:hover{border-color:var(--red)}
+.mgr-conv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mgr-conv-id{font-size:12px;font-weight:700;color:var(--red)}
+.mgr-conv-time{font-size:11px;color:var(--grey)}
+.mgr-conv-preview{font-size:12px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mgr-conv-rating{font-size:12px;margin-top:4px}
+.mgr-empty{font-size:13px;color:var(--grey);text-align:center;padding:20px 0;line-height:1.6}
+.mgr-fiche-wrap{border:1.5px solid rgba(226,0,26,0.3);border-radius:10px;margin-top:12px;overflow:hidden;display:none}
+.mgr-fiche-wrap.show{display:block}
+.mgr-fiche-header{background:#1f0005;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.mgr-fiche-title{font-size:12px;font-weight:700;color:var(--red)}
+.mgr-fiche-body{padding:12px 14px;font-size:12px;color:var(--text);line-height:1.7;white-space:pre-wrap;max-height:180px;overflow-y:auto}
+.mgr-fiche-btns{display:flex;gap:6px}
+.mgr-btn{background:transparent;border:1px solid var(--border2);color:var(--grey);font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+.mgr-btn:hover{border-color:var(--red);color:var(--red)}
+.mgr-gen-btn{width:100%;background:var(--red);color:var(--white);border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:10px;transition:background 0.2s}
+.mgr-gen-btn:hover{background:var(--red2)}
+.mgr-gen-btn:disabled{opacity:0.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -556,9 +595,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <button class="rating-send" id="ratingSend" onclick="sendRating()">Envoyer mon avis</button>
       <div class="rating-done" id="ratingDone"></div>
     </div>
-    <div style="padding:8px 20px 4px">
-      <button id="gen-fiche-btn" onclick="genFiche()">📋 Générer la fiche dossier</button>
-    </div>
+
     <div id="ficheWrap" class="fiche-wrap" style="display:none">
       <div class="fiche-header">
         <span class="fiche-title">📋 FICHE DOSSIER</span>
@@ -590,6 +627,39 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
     </div>
   </div>
 
+
+  <!-- PAGE MANAGER -->
+  <div class="page" id="page-manager">
+    <!-- Login -->
+    <div id="mgrLoginWrap" class="mgr-login-wrap">
+      <div class="mgr-login-box">
+        <div class="mgr-login-icon">⚙️</div>
+        <div class="mgr-login-title">Manager</div>
+        <div class="mgr-login-sub">Accès réservé aux conseillers Free</div>
+        <input class="lf-field" type="text" id="mgrUser" placeholder="Identifiant" style="margin-bottom:12px">
+        <input class="lf-field" type="password" id="mgrPass" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')mgrLogin()">
+        <button class="btn-connect" onclick="mgrLogin()">Connexion Manager</button>
+        <div class="mgr-hint">Identifiants : <span>manager / free2026</span></div>
+      </div>
+    </div>
+    <!-- Dashboard -->
+    <div class="mgr-dash" id="mgrDash">
+      <div class="mgr-dash-header">
+        <div class="mgr-dash-title">Espace <span>Manager</span></div>
+        <button class="btn-logout" onclick="mgrLogout()">Déconnexion</button>
+      </div>
+      <div class="mgr-stats">
+        <div class="mgr-stat"><div class="mgr-stat-n" id="mgrStatConv">0</div><div class="mgr-stat-l">Conversations</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-n" id="mgrStatNote">—</div><div class="mgr-stat-l">Note moy.</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-n" id="mgrStatFiches">0</div><div class="mgr-stat-l">Fiches</div></div>
+      </div>
+      <div class="mgr-section">
+        <div class="mgr-section-title">💬 Conversations sauvegardées</div>
+        <div id="mgrConvList"><div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Free Bot apparaîtront ici.</div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="bnav-item active" id="bnav-home" onclick="showPage('home')">
@@ -604,6 +674,10 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <div class="bnav-icon" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="13" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-weight="700" fill="#e2001a">F</text></svg></div>
       <div class="bnav-label">Free Bot</div>
     </div>
+    <div class="bnav-item" id="bnav-manager" onclick="showPage('manager')">
+      <div class="bnav-icon">⚙️</div>
+      <div class="bnav-label">Manager</div>
+    </div>
     <div class="bnav-item" id="bnav-reglages" onclick="showPage('reglages')">
       <div class="bnav-icon">⚙️</div>
       <div class="bnav-label">Réglages</div>
@@ -612,8 +686,8 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
 </div>
 
 <script>
-const pages=['home','conso','factures','compte','reglages','chatbot'];
-const bnavIds=['home','compte','chatbot','reglages'];
+const pages=['home','conso','factures','compte','reglages','chatbot','manager'];
+const bnavIds=['home','compte','chatbot','reglages','manager'];
 function showPage(id){
   pages.forEach(p=>{const el=document.getElementById('page-'+p);if(el)el.classList.toggle('active',p===id);});
   bnavIds.forEach(k=>{const el=document.getElementById('bnav-'+k);if(el)el.classList.toggle('active',k===id);});
@@ -808,6 +882,7 @@ function setRating(n){
   document.getElementById('ratingSend').classList.add('show');
 }
 function sendRating(){
+  mgrSaveConv();
   if(!currentRating) return;
   document.getElementById('ratingSend').classList.remove('show');
   var done=document.getElementById('ratingDone');
@@ -821,6 +896,123 @@ function checkForGoodbye(text){
     'belle journée','excellente journée','passez une bonne','bien cordialement'];
   var lower=text.toLowerCase();
   return words.some(function(w){return lower.includes(w);});
+}
+
+
+// ── MANAGER ──
+var mgrConversations = [];
+var mgrFichesCount = 0;
+
+function mgrLogin(){
+  var u = document.getElementById('mgrUser').value.trim();
+  var p = document.getElementById('mgrPass').value.trim();
+  if(u === 'manager' && p === 'free2026'){
+    document.getElementById('mgrLoginWrap').style.display = 'none';
+    document.getElementById('mgrDash').classList.add('show');
+    mgrRefresh();
+  } else {
+    alert('Identifiants incorrects.');
+  }
+}
+function mgrLogout(){
+  document.getElementById('mgrLoginWrap').style.display = 'flex';
+  document.getElementById('mgrDash').classList.remove('show');
+  document.getElementById('mgrUser').value = '';
+  document.getElementById('mgrPass').value = '';
+}
+function mgrSaveConv(){
+  if(chatHistory.length < 2) return;
+  var rating = currentRating || null;
+  var conv = {
+    id: 'CONV-' + Date.now(),
+    time: new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+    date: new Date().toLocaleDateString('fr-FR'),
+    messages: chatHistory.slice(),
+    rating: rating,
+    preview: chatHistory[0].content.substring(0,60)
+  };
+  mgrConversations.unshift(conv);
+  if(mgrConversations.length > 20) mgrConversations.pop();
+}
+function mgrRefresh(){
+  // Stats
+  document.getElementById('mgrStatConv').textContent = mgrConversations.length;
+  var notes = mgrConversations.filter(function(c){return c.rating;}).map(function(c){return c.rating;});
+  document.getElementById('mgrStatNote').textContent = notes.length ? (notes.reduce(function(a,b){return a+b;},0)/notes.length).toFixed(1) : '—';
+  document.getElementById('mgrStatFiches').textContent = mgrFichesCount;
+  // Liste
+  var list = document.getElementById('mgrConvList');
+  if(!mgrConversations.length){
+    list.innerHTML = '<div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Free Bot apparaîtront ici.</div>';
+    return;
+  }
+  list.innerHTML = mgrConversations.map(function(conv, idx){
+    var stars = conv.rating ? '⭐'.repeat(conv.rating) + ' ' + conv.rating + '/5' : 'Non noté';
+    return '<div class="mgr-conv-item" onclick="mgrOpenConv('+idx+')">' +
+      '<div class="mgr-conv-header"><span class="mgr-conv-id">' + conv.id + '</span><span class="mgr-conv-time">' + conv.date + ' ' + conv.time + '</span></div>' +
+      '<div class="mgr-conv-preview">' + conv.preview + '...</div>' +
+      '<div class="mgr-conv-rating">' + stars + '</div>' +
+      '<div id="ficheZone-'+idx+'" class="mgr-fiche-wrap"></div>' +
+      '<button class="mgr-gen-btn" onclick="event.stopPropagation();mgrGenFiche('+idx+',this)">📋 Générer la fiche dossier</button>' +
+    '</div>';
+  }).join('');
+}
+function mgrOpenConv(idx){
+  // Highlight
+}
+async function mgrGenFiche(idx, btn){
+  var conv = mgrConversations[idx];
+  btn.textContent = 'Génération en cours...';
+  btn.disabled = true;
+  var prompt = "Genere une fiche dossier structuree. Sections : MOTIF DE CONTACT, RESUME, ACTIONS, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : " +
+    conv.messages.map(function(m){return (m.role==='user'?'Client':'Free Bot')+' : '+m.content;}).join(' | ');
+  try{
+    var res = await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5',
+        max_tokens:600,
+        system:"Tu es un assistant qui cree des fiches dossier pour un operateur telecom. Reponds en francais de façon structuree et concise.",
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    var data = await res.json();
+    var fiche = (data.content && data.content[0]) ? data.content[0].text : 'Erreur.';
+    mgrFichesCount++;
+    document.getElementById('mgrStatFiches').textContent = mgrFichesCount;
+    var zone = document.getElementById('ficheZone-'+idx);
+    zone.classList.add('show');
+    var ficheId = 'fiche-body-'+idx;
+    zone.innerHTML = '<div class="mgr-fiche-header"><span class="mgr-fiche-title">📋 FICHE DOSSIER</span>' +
+      '<div class="mgr-fiche-btns">' +
+      '<button class="mgr-btn" onclick="mgrToggleFiche('+idx+',this)">— Réduire</button>' +
+      '<button class="mgr-btn" onclick="mgrCopyFiche('+idx+',this)">📋 Copier</button>' +
+      '</div></div>' +
+      '<div class="mgr-fiche-body" id="' + ficheId + '">' + fiche + '</div>';
+    btn.textContent = '🔄 Régénérer la fiche';
+    btn.disabled = false;
+  }catch(e){
+    btn.textContent = '📋 Générer la fiche dossier';
+    btn.disabled = false;
+    alert('Erreur de connexion.');
+  }
+}
+
+
+function mgrToggleFiche(idx, btn){
+  var body = document.getElementById('fiche-body-'+idx);
+  if(!body) return;
+  body.classList.toggle('collapsed');
+  btn.textContent = body.classList.contains('collapsed') ? '□ Agrandir' : '— Réduire';
+}
+function mgrCopyFiche(idx, btn){
+  var body = document.getElementById('fiche-body-'+idx);
+  if(!body) return;
+  navigator.clipboard.writeText(body.textContent).then(function(){
+    btn.textContent = '✅ Copié!';
+    setTimeout(function(){btn.textContent='📋 Copier';}, 2000);
+  });
 }
 
 </script>

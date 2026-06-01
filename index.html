@@ -646,7 +646,10 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
     <div class="mgr-dash" id="mgrDash">
       <div class="mgr-dash-header">
         <div class="mgr-dash-title">Espace <span>Manager</span></div>
-        <button class="btn-logout" onclick="mgrLogout()">Déconnexion</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn-logout" onclick="mgrClearAll()" style="border-color:rgba(226,0,26,0.3);color:var(--red)">🗑️ Vider</button>
+          <button class="btn-logout" onclick="mgrLogout()">Déconnexion</button>
+        </div>
       </div>
       <div class="mgr-stats">
         <div class="mgr-stat"><div class="mgr-stat-n" id="mgrStatConv">0</div><div class="mgr-stat-l">Conversations</div></div>
@@ -708,6 +711,7 @@ function backToChoice(){
   document.getElementById('loginScreen').style.display='flex';
 }
 function doLogin(){
+  currentConvId=null;
   document.getElementById('loginForm').classList.remove('visible');
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appShell').style.display='block';
@@ -895,7 +899,13 @@ function sendRating(){
   mgrSaveConv();
   if(!currentRating) return;
   // Mettre à jour la note dans la dernière conversation sauvegardée
-  if(mgrConversations.length > 0) mgrConversations[0].rating = currentRating;
+  if(currentConvId){
+    fetch(SUPA_URL+'/rest/v1/free_conversations?id=eq.'+currentConvId,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY},
+      body:JSON.stringify({rating:currentRating})
+    }).catch(function(e){console.error(e);});
+  }
   mgrRefresh();
   document.getElementById('ratingSend').classList.remove('show');
   var done=document.getElementById('ratingDone');
@@ -915,6 +925,8 @@ function checkForGoodbye(text){
 // ── MANAGER ──
 var mgrConversations = [];
 var mgrFichesCount = 0;
+var SUPA_URL = 'https://sfndfnkqoiifmdekrnzq.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbmRmbmtxb2lpZm1kZWtybnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDgyMjgsImV4cCI6MjA5NTU4NDIyOH0.dEfXCl-vKnfv8Og5lrcH5KBUMxZczQL5MiAVYvgdk8A';
 
 function mgrLogin(){
   var u = document.getElementById('mgrUser').value.trim();
@@ -933,40 +945,64 @@ function mgrLogout(){
   document.getElementById('mgrUser').value = '';
   document.getElementById('mgrPass').value = '';
 }
-function mgrSaveConv(){
+var currentConvId = null;
+async function mgrSaveConv(){
   if(chatHistory.length < 2) return;
-  var rating = currentRating || null;
-  var conv = {
-    id: 'CONV-' + Date.now(),
-    time: new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
-    date: new Date().toLocaleDateString('fr-FR'),
+  var now = new Date();
+  var convData = {
+    date: now.toLocaleDateString('fr-FR'),
+    time: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+    preview: chatHistory[0].content.substring(0,60),
     messages: chatHistory.slice(),
-    rating: rating,
-    preview: chatHistory[0].content.substring(0,60)
+    rating: currentRating || null
   };
-  mgrConversations.unshift(conv);
-  if(mgrConversations.length > 20) mgrConversations.pop();
+  try{
+    if(currentConvId){
+      // Mettre à jour la conversation existante
+      await fetch(SUPA_URL+'/rest/v1/free_conversations?id=eq.'+currentConvId, {
+        method:'PATCH',
+        headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY},
+        body:JSON.stringify(convData)
+      });
+    } else {
+      // Créer une nouvelle conversation
+      var res = await fetch(SUPA_URL+'/rest/v1/free_conversations', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=representation'},
+        body:JSON.stringify(convData)
+      });
+      var data = await res.json();
+      if(data && data[0]) currentConvId = data[0].id;
+    }
+  }catch(e){console.error('Supabase save error:',e);}
 }
-function mgrRefresh(){
+async function mgrRefresh(){
+  try{
+    var res = await fetch(SUPA_URL+'/rest/v1/free_conversations?order=created_at.desc&limit=20',{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+    mgrConversations = await res.json();
+  }catch(e){console.error('Supabase load error:',e);}
+
   // Stats
   document.getElementById('mgrStatConv').textContent = mgrConversations.length;
-  var notes = mgrConversations.filter(function(c){return c.rating;}).map(function(c){return c.rating;});
+  var notes = mgrConversations.filter(function(cv){return cv.rating;}).map(function(cv){return cv.rating;});
   document.getElementById('mgrStatNote').textContent = notes.length ? (notes.reduce(function(a,b){return a+b;},0)/notes.length).toFixed(1) : '—';
   document.getElementById('mgrStatFiches').textContent = mgrFichesCount;
-  // Liste
+
   var list = document.getElementById('mgrConvList');
   if(!mgrConversations.length){
     list.innerHTML = '<div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Free Bot apparaîtront ici.</div>';
     return;
   }
   list.innerHTML = mgrConversations.map(function(conv, idx){
-    var stars = conv.rating ? '⭐'.repeat(conv.rating) + ' ' + conv.rating + '/5' : 'Non noté';
-    return '<div class="mgr-conv-item" onclick="mgrOpenConv('+idx+')">' +
-      '<div class="mgr-conv-header"><span class="mgr-conv-id">' + conv.id + '</span><span class="mgr-conv-time">' + conv.date + ' ' + conv.time + '</span></div>' +
-      '<div class="mgr-conv-preview">' + conv.preview + '...</div>' +
-      '<div class="mgr-conv-rating">' + stars + '</div>' +
+    var stars = conv.rating ? '⭐'.repeat(conv.rating)+' '+conv.rating+'/5' : 'Non noté';
+    return '<div class="mgr-conv-item">' +
+      '<div class="mgr-conv-header"><span class="mgr-conv-id">CONV-'+conv.id+'</span><span class="mgr-conv-time">'+conv.date+' '+conv.time+'</span></div>' +
+      '<div class="mgr-conv-preview">'+(conv.preview||'')+'...</div>' +
+      '<div class="mgr-conv-rating">'+stars+'</div>' +
       '<div id="ficheZone-'+idx+'" class="mgr-fiche-wrap"></div>' +
-      '<button class="mgr-gen-btn" onclick="event.stopPropagation();mgrGenFiche('+idx+',this)">📋 Générer la fiche dossier</button>' +
+      '<button class="mgr-gen-btn" onclick="mgrGenFiche('+idx+',this)">📋 Générer la fiche dossier</button>' +
     '</div>';
   }).join('');
 }
@@ -993,6 +1029,7 @@ async function mgrGenFiche(idx, btn){
     var data = await res.json();
     var fiche = (data.content && data.content[0]) ? data.content[0].text : 'Erreur.';
     mgrFichesCount++;
+    localStorage.setItem('freebot_fiches', mgrFichesCount);
     document.getElementById('mgrStatFiches').textContent = mgrFichesCount;
     var zone = document.getElementById('ficheZone-'+idx);
     zone.classList.add('show');
@@ -1032,6 +1069,19 @@ function mgrCopyFiche(idx, btn){
 function endConversation(){
   document.getElementById('end-conv-btn').style.display='none';
   showRating();
+}
+
+
+async function mgrClearAll(){
+  if(!confirm('Supprimer tout l\'historique ?')) return;
+  try{
+    await fetch(SUPA_URL+'/rest/v1/free_conversations?id=neq.0',{
+      method:'DELETE',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+  }catch(e){console.error('Clear error:',e);}
+  mgrConversations=[];mgrFichesCount=0;
+  mgrRefresh();
 }
 
 </script>

@@ -760,7 +760,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:150,
-        system:"Tu es Free Bot, assistant IA de Free. Tu parles à Marie. RÈGLE ABSOLUE : maximum 1 ou 2 phrases courtes par réponse. Jamais plus. Pose UNE seule question à la fois. Sois naturel et chaleureux comme un SMS. Si résiliation : comprends le problème, propose une solution, retiens le client. Termine toujours par 'Bonne journée !' ou 'À bientôt !' ou 'Au revoir !' en fin de conversation.",
+        system:"Tu es Free Bot, assistant IA de Free. Tu parles à Marie. RÈGLES ABSOLUES : 1 ou 2 phrases max, style SMS, une seule question à la fois. Si résiliation : comprends le problème, propose une solution, retiens le client. NE DIS 'Bonne journée !' ou 'À bientôt !' QUE si le client dit au revoir ou confirme que tout est réglé. Jamais en cours de conversation.",
         messages:chatHistory
       })
     });

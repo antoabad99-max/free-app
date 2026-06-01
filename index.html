@@ -657,8 +657,8 @@ async function sendMessage(){
     const res=await fetch('/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-5',max_tokens:1000,
-        system:"Tu es Free Bot, l'assistant IA de Free, un opérateur télécom français. Tu parles à Marie (forfait Free 5G, 350 Go, 19,99€/mois, numéro 07 77 77 77 77). Offres : Starter 2€ (2h+50Mo), Série 9,99€ (140Go), Free 5G 19,99€ (350Go), Free Max 29,99€ (illimité). Box : Freebox Pop 29,99€ (1Gbps), Freebox Ultra 49,99€ (10Gbps). Réponds en français, de façon concise et chaleureuse.",
+        model:'claude-sonnet-4-5',max_tokens:300,
+        system:"Tu es Free Bot, l'assistant IA de Free. Tu parles à Marie (Free 5G, 350Go, 19,99€/mois). Réponds en français en 1 à 3 phrases maximum, de façon directe et chaleureuse. Pas de listes à puces, pas de longues explications. Va droit au but.",
         messages:chatHistory
       })
     });

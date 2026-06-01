@@ -582,6 +582,10 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <div class="chip" onclick="sendChip('Problème réseau')">Réseau</div>
       <div class="chip" onclick="sendChip('Télécharger ma facture')">Facture</div>
     </div>
+    <div style="padding:6px 20px 4px">
+      <button id="end-conv-btn" onclick="endConversation()" style="width:100%;background:transparent;border:1.5px solid var(--border2);color:var(--grey);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:9px;border-radius:10px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#e2001a';this.style.color='#e2001a'" onmouseout="this.style.borderColor='';this.style.color=''">✓ Terminer la conversation</button>
+    </div>
+
     <div id="ratingWrap" class="rating-wrap">
       <div class="rating-title">Comment s'est passée cette conversation ?</div>
       <div class="rating-stars">
@@ -601,7 +605,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
         <span class="fiche-title">📋 FICHE DOSSIER</span>
         <div class="fiche-btns">
           <button class="fiche-btn" id="ficheMinBtn" onclick="toggleFiche()">— Réduire</button>
-          <button class="fiche-btn" onclick="expandFiche()">⛶ Agrandir</button>
+          <button class="fiche-btn" onclick="expandFiche()" title="Plein écran">⛶</button>
           <button class="fiche-btn" onclick="copyFiche()">📋 Copier</button>
         </div>
       </div>
@@ -760,7 +764,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:150,
-        system:"Tu es Free Bot, assistant IA de Free. Tu parles à Marie. RÈGLES ABSOLUES : 1 ou 2 phrases max, style SMS, une seule question à la fois. Si résiliation : comprends le problème, propose une solution, retiens le client. NE DIS 'Bonne journée !' ou 'À bientôt !' QUE si le client dit au revoir ou confirme que tout est réglé. Jamais en cours de conversation.",
+        system:"Tu es Free Bot, assistant IA de Free. Tu parles à Marie. RÈGLES : 1 ou 2 phrases max, style SMS naturel, une seule question à la fois. Si résiliation : comprends le problème, propose une solution, retiens le client. Ne jamais dire au revoir ou bonne journée.",
         messages:chatHistory
       })
     });
@@ -837,8 +841,15 @@ async function genFiche(){
 
 function toggleFiche(){
   ficheVisible=!ficheVisible;
-  document.getElementById('ficheBody').classList.toggle('collapsed',!ficheVisible);
-  document.getElementById('ficheMinBtn').textContent=ficheVisible?'— Réduire':'□ Agrandir';
+  var body=document.getElementById('ficheBody');
+  var btn=document.getElementById('ficheMinBtn');
+  if(ficheVisible){
+    body.classList.remove('collapsed');
+    btn.textContent='— Réduire';
+  }else{
+    body.classList.add('collapsed');
+    btn.textContent='□ Agrandir';
+  }
 }
 function expandFiche(){
   document.getElementById('ficheModal').classList.add('open');
@@ -1018,6 +1029,12 @@ function mgrCopyFiche(idx, btn){
     btn.textContent = '✅ Copié!';
     setTimeout(function(){btn.textContent='📋 Copier';}, 2000);
   });
+}
+
+
+function endConversation(){
+  document.getElementById('end-conv-btn').style.display='none';
+  showRating();
 }
 
 </script>

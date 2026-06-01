@@ -734,6 +734,7 @@ function addMsg(role,text){
   }else{
     div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="c-logo-wrap"><span class="c-logo-static">free</span></div></div>';
     if(voiceOn)speak(text);
+    mgrSaveConv();
     if(checkForGoodbye(text)){setTimeout(showRating,800);}
   }
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
@@ -760,7 +761,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:150,
-        system:"Tu es Free Bot, assistant IA de Free. Tu parles à Marie. RÈGLES : 1 ou 2 phrases max, style SMS naturel, une seule question à la fois. Si résiliation : comprends le problème, propose une solution, retiens le client. Ne jamais dire au revoir ou bonne journée.",
+        system:"Tu es Free Bot, assistant IA de Free. Tu parles à Marie (Free 5G, 350Go, 19,99€/mois). Réponds en 1 ou 2 phrases max, style SMS. Si résiliation : comprends le problème, propose une solution, retiens le client. RÈGLE IMPORTANTE : quand le client n'a plus de questions ou prend congé, tu DOIS terminer ton message par exactement cette phrase : 'Bonne journée !'",
         messages:chatHistory
       })
     });

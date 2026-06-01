@@ -754,6 +754,9 @@ function removeTyping(){const t=document.getElementById('typing-ind');if(t)t.rem
   document.querySelectorAll('.rb-wrap').forEach(r=>r.classList.remove('thinking'));}
 function sendChip(txt){document.getElementById('chat-input').value=txt;sendMessage();}
 async function sendMessage(){
+  // Cacher les chips dès le premier message
+  var chips=document.querySelector('.chat-chips');
+  if(chips) chips.style.display='none';
   if(isTyping)return;
   const input=document.getElementById('chat-input');
   const msg=input.value.trim();if(!msg)return;

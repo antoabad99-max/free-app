@@ -5,6 +5,9 @@ export default async function handler(req, res) {
   
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  console.log('Clé présente:', !!process.env.ANTHROPIC_API_KEY);
+  console.log('Longueur clé:', process.env.ANTHROPIC_API_KEY?.length);
+
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -18,7 +21,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     console.log('Status Anthropic:', response.status);
-    console.log('Response:', JSON.stringify(data).substring(0, 200));
+    console.log('Response:', JSON.stringify(data).substring(0, 300));
     res.status(200).json(data);
     
   } catch (err) {

@@ -232,6 +232,21 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
 .fiche-modal-title{font-size:14px;font-weight:700;color:var(--red)}
 .fiche-modal-btns{display:flex;gap:8px}
 .fiche-modal-body{padding:18px;font-size:14px;color:var(--text);line-height:1.7;white-space:pre-wrap;overflow-y:auto;flex:1}
+
+/* NOTATION */
+.rating-wrap{margin:0 20px 14px;border:1.5px solid rgba(255,215,0,0.3);border-radius:14px;background:var(--dark);padding:18px;display:none}
+.rating-wrap.show{display:block}
+.rating-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;text-align:center}
+.rating-stars{display:flex;justify-content:center;gap:10px;margin-bottom:14px}
+.star{font-size:32px;cursor:pointer;transition:transform 0.15s;filter:grayscale(1);opacity:0.4}
+.star.active{filter:none;opacity:1;transform:scale(1.15)}
+.rating-msg{font-size:13px;color:var(--grey);text-align:center;min-height:18px;margin-bottom:12px}
+.rating-send{width:100%;background:#FFD700;color:#000;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:none}
+.rating-send.show{display:block}
+.rating-done{font-size:13px;color:#FFD700;text-align:center;display:none;font-weight:600}
+.rating-done.show{display:block}
+#rating-manual-btn{width:calc(100% - 40px);margin:0 20px 8px;background:transparent;border:1.5px dashed rgba(255,215,0,0.3);color:rgba(255,215,0,0.6);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px;border-radius:10px;cursor:pointer;transition:all 0.2s}
+#rating-manual-btn:hover{border-color:#FFD700;color:#FFD700}
 </style>
 </head>
 <body>
@@ -529,6 +544,20 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <div class="chip" onclick="sendChip('Problème réseau')">Réseau</div>
       <div class="chip" onclick="sendChip('Télécharger ma facture')">Facture</div>
     </div>
+    <div id="ratingWrap" class="rating-wrap">
+      <div class="rating-title">Comment s'est passée cette conversation ?</div>
+      <div class="rating-stars">
+        <span class="star" onclick="setRating(1)">⭐</span>
+        <span class="star" onclick="setRating(2)">⭐</span>
+        <span class="star" onclick="setRating(3)">⭐</span>
+        <span class="star" onclick="setRating(4)">⭐</span>
+        <span class="star" onclick="setRating(5)">⭐</span>
+      </div>
+      <div class="rating-msg" id="ratingMsg"></div>
+      <button class="rating-send" id="ratingSend" onclick="sendRating()">Envoyer mon avis</button>
+      <div class="rating-done" id="ratingDone"></div>
+    </div>
+    <button id="rating-manual-btn" onclick="showRating()">⭐ Noter la conversation</button>
     <div style="padding:8px 20px 4px">
       <button id="gen-fiche-btn" onclick="genFiche()">📋 Générer la fiche dossier</button>
     </div>
@@ -633,6 +662,7 @@ function addMsg(role,text){
   }else{
     div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="c-logo-wrap"><span class="c-logo-static">free</span></div></div>';
     if(voiceOn)speak(text);
+  if(checkForGoodbye(text)){setTimeout(showRating,800);}
   }
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
 }
@@ -658,7 +688,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:300,
-        system:"Tu es Free Bot, l'assistant IA de Free. Tu parles à Marie (Free 5G, 350Go, 19,99€/mois). Réponds en français en 1 à 3 phrases maximum, de façon directe et chaleureuse. Pas de listes à puces, pas de longues explications. Va droit au but.",
+        system:"Tu es Free Bot, l'assistant IA de Free. Tu parles à Marie (Free 5G, 350Go, 19,99€/mois). Réponds en 1 à 3 phrases, directement et chaleureusement. Pas de listes. IMPORTANT : quand la conversation se termine, termine TOUJOURS par 'Bonne journée !' ou 'À bientôt !' ou 'Au revoir !'.",
         messages:chatHistory
       })
     });
@@ -761,6 +791,39 @@ function copyFicheModal(){
     const b=document.querySelector('.fiche-modal-btns .fiche-btn');
     b.textContent='✅ Copié !';setTimeout(()=>{b.textContent='📋 Copier';},2000);
   });
+}
+
+
+// ── NOTATION ──
+var currentRating=0, ratingShown=false;
+var ratingMsgs=['','😞 Très insatisfait','😕 Insatisfait','😐 Correct','😊 Satisfait','🌟 Excellent !'];
+
+function showRating(){
+  if(ratingShown) return;
+  ratingShown=true;
+  document.getElementById('ratingWrap').classList.add('show');
+  document.getElementById('rating-manual-btn').style.display='none';
+}
+function setRating(n){
+  currentRating=n;
+  document.querySelectorAll('.star').forEach(function(s,i){s.classList.toggle('active',i<n);});
+  document.getElementById('ratingMsg').textContent=ratingMsgs[n];
+  document.getElementById('ratingSend').classList.add('show');
+}
+function sendRating(){
+  if(!currentRating) return;
+  document.getElementById('ratingSend').classList.remove('show');
+  var done=document.getElementById('ratingDone');
+  done.textContent='✅ Merci pour votre avis — '+currentRating+'/5 étoiles enregistré';
+  done.classList.add('show');
+}
+function checkForGoodbye(text){
+  var words=['bonne journée','bonne soirée','bonne nuit','au revoir','à bientôt',
+    'à très bientôt','n\'hésitez pas','prenez soin','bonne continuation',
+    'problème résolu','ticket créé','à votre service','merci de votre confiance',
+    'belle journée','excellente journée','passez une bonne','bien cordialement'];
+  var lower=text.toLowerCase();
+  return words.some(function(w){return lower.includes(w);});
 }
 
 </script>

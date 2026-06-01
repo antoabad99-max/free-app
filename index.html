@@ -729,7 +729,7 @@ function toggleVoice(){
   if(voiceOn)speak('La voix de Free Bot est activée.');
 }
 function speak(t){if(!voiceOn||!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';window.speechSynthesis.speak(u);}
-function addMsg(role,text){
+async function addMsg(role,text){
   const wrap=document.getElementById('chatMessages');
   const div=document.createElement('div');
   div.className='c-msg '+(role==='user'?'user':'coral');
@@ -738,7 +738,7 @@ function addMsg(role,text){
   }else{
     div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="c-logo-wrap"><span class="c-logo-static">free</span></div></div>';
     if(voiceOn)speak(text);
-    mgrSaveConv();
+    await mgrSaveConv();
     if(checkForGoodbye(text)){setTimeout(showRating,800);}
   }
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
@@ -885,10 +885,10 @@ function copyFicheModal(){
 var currentRating=0, ratingShown=false;
 var ratingMsgs=['','😞 Très insatisfait','😕 Insatisfait','😐 Correct','😊 Satisfait','🌟 Excellent !'];
 
-function showRating(){
+async function showRating(){
   if(ratingShown) return;
   ratingShown=true;
-  mgrSaveConv();
+  await mgrSaveConv();
   mgrRefresh();
   document.getElementById('ratingWrap').classList.add('show');
 }
@@ -898,7 +898,7 @@ function setRating(n){
   document.getElementById('ratingMsg').textContent=ratingMsgs[n];
   document.getElementById('ratingSend').classList.add('show');
 }
-function sendRating(){
+async function sendRating(){
   mgrSaveConv();
   if(!currentRating) return;
   // Mettre à jour la note dans la dernière conversation sauvegardée
@@ -956,7 +956,7 @@ async function mgrSaveConv(){
     date: now.toLocaleDateString('fr-FR'),
     time: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
     preview: chatHistory[0].content.substring(0,60),
-    messages: chatHistory.slice(),
+    message: chatHistory.slice(),
     rating: currentRating || null
   };
   try{
@@ -975,6 +975,7 @@ async function mgrSaveConv(){
         body:JSON.stringify(convData)
       });
       var data = await res.json();
+      console.log('Supabase insert response:', JSON.stringify(data).substring(0,200));
       if(data && data[0]) currentConvId = data[0].id;
     }
   }catch(e){console.error('Supabase save error:',e);}
@@ -984,7 +985,9 @@ async function mgrRefresh(){
     var res = await fetch(SUPA_URL+'/rest/v1/free_conversations?order=created_at.desc&limit=20',{
       headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
     });
-    mgrConversations = await res.json();
+    var loaded = await res.json();
+    console.log('Supabase loaded:', loaded.length, 'conversations');
+    mgrConversations = loaded;
   }catch(e){console.error('Supabase load error:',e);}
 
   // Stats
@@ -1016,8 +1019,9 @@ async function mgrGenFiche(idx, btn){
   var conv = mgrConversations[idx];
   btn.textContent = 'Génération en cours...';
   btn.disabled = true;
+  var msgs = conv.message || conv.messages || [];
   var prompt = "Genere une fiche dossier structuree. Sections : MOTIF DE CONTACT, RESUME, ACTIONS, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : " +
-    conv.messages.map(function(m){return (m.role==='user'?'Client':'Free Bot')+' : '+m.content;}).join(' | ');
+    msgs.map(function(m){return (m.role==='user'?'Client':'Free Bot')+' : '+m.content;}).join(' | ');
   try{
     var res = await fetch('/api/chat',{
       method:'POST',

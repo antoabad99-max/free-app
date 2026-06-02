@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const { text } = req.body;
   if (!text) return res.status(400).json({ error: 'No text provided' });
 
-  const VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'h9wTb50iJC9oQuw5A37H';
+  const VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL'; // Sarah - voix gratuite
   const API_KEY = process.env.ELEVENLABS_API_KEY;
 
   try {

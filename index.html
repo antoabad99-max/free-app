@@ -728,7 +728,30 @@ function toggleVoice(){
   document.getElementById('voiceLabel').textContent=voiceOn?'🔊 Voix':'🔇 Voix';
   if(voiceOn)speak('La voix de Free Bot est activée.');
 }
-function speak(t){if(!voiceOn||!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';window.speechSynthesis.speak(u);}
+async function speak(t){
+  if(!voiceOn) return;
+  try{
+    var res = await fetch('/api/tts', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text:t})
+    });
+    if(!res.ok) throw new Error('TTS error');
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var audio = new Audio(url);
+    audio.play();
+    audio.onended = function(){ URL.revokeObjectURL(url); };
+  }catch(e){
+    console.error('TTS error:', e);
+    // Fallback voix navigateur
+    if(window.speechSynthesis){
+      var u=new SpeechSynthesisUtterance(t);
+      u.lang='fr-FR';
+      window.speechSynthesis.speak(u);
+    }
+  }
+}
 async function addMsg(role,text){
   const wrap=document.getElementById('chatMessages');
   const div=document.createElement('div');

@@ -537,7 +537,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
         <div class="settings-section-title">Support</div>
         <div class="settings-group">
           <div class="settings-item" onclick="showPage('chatbot')">
-            <div><div class="si-label">🤖 Free Bot</div></div>
+            <div><div class="si-label">🤖 Robee</div></div>
             <span class="si-arr">›</span>
           </div>
           <div class="settings-item">
@@ -558,7 +558,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
     <div class="chat-header">
       <div class="chat-av"><div class="rb-wrap" id="rbMain"><svg width="38" height="38" viewBox="0 0 38 38"><circle cx="19" cy="19" r="18" fill="#1a1a1a" stroke="#e2001a" stroke-width="2"/><text x="19" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#e2001a">F</text></svg></div></div>
       <div class="chat-info">
-        <h3>Free Bot</h3>
+        <h3>Robee</h3>
         <p>Assistant IA · Free · Disponible 24h/24</p>
       </div>
       <button class="chat-voice-btn" id="voiceBtn" onclick="toggleVoice()">
@@ -570,7 +570,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       <div class="c-msg coral">
         <div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div>
         <div>
-          <div class="c-bubble">Bonjour Marie ! Je suis Free Bot, l'assistant IA de Free<br>Comment puis-je vous aider ?</div>
+          <div class="c-bubble">Bonjour Marie ! Je suis Robee, l'assistant IA de Free<br>Comment puis-je vous aider ?</div>
           <div class="c-logo-wrap"><span class="c-logo-static">free</span></div>
         </div>
       </div>
@@ -658,7 +658,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
       </div>
       <div class="mgr-section">
         <div class="mgr-section-title">💬 Conversations sauvegardées</div>
-        <div id="mgrConvList"><div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Free Bot apparaîtront ici.</div></div>
+        <div id="mgrConvList"><div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Robee apparaîtront ici.</div></div>
       </div>
     </div>
   </div>
@@ -675,7 +675,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
     </div>
     <div class="bnav-item" id="bnav-chatbot" onclick="showPage('chatbot')">
       <div class="bnav-icon" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="13" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-weight="700" fill="#e2001a">F</text></svg></div>
-      <div class="bnav-label">Free Bot</div>
+      <div class="bnav-label">Robee</div>
     </div>
     <div class="bnav-item" id="bnav-manager" onclick="showPage('manager')">
       <div class="bnav-icon">📊</div>
@@ -726,31 +726,16 @@ function toggleVoice(){
   voiceOn=!voiceOn;
   document.getElementById('voiceBtn').classList.toggle('on',voiceOn);
   document.getElementById('voiceLabel').textContent=voiceOn?'🔊 Voix':'🔇 Voix';
-  if(voiceOn)speak('La voix de Free Bot est activée.');
+  if(voiceOn)speak('La voix de Robee est activée.');
 }
-async function speak(t){
-  if(!voiceOn) return;
-  try{
-    var res = await fetch('/api/tts', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text:t})
-    });
-    if(!res.ok) throw new Error('TTS error');
-    var blob = await res.blob();
-    var url = URL.createObjectURL(blob);
-    var audio = new Audio(url);
-    audio.play();
-    audio.onended = function(){ URL.revokeObjectURL(url); };
-  }catch(e){
-    console.error('TTS error:', e);
-    // Fallback voix navigateur
-    if(window.speechSynthesis){
-      var u=new SpeechSynthesisUtterance(t);
-      u.lang='fr-FR';
-      window.speechSynthesis.speak(u);
-    }
-  }
+function speak(t){
+  if(!voiceOn||!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang='fr-FR';
+  u.rate=0.9;
+  u.pitch=1.1;
+  window.speechSynthesis.speak(u);
 }
 async function addMsg(role,text){
   const wrap=document.getElementById('chatMessages');
@@ -791,7 +776,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:250,
-        system:"Tu es Free Bot, assistant IA de Free Mobile. Marie est abonnée Forfait Free 5G+ 350Go à 19,99€/mois. OFFRES MOBILE : Forfait 2€ (2h+50Mo, gratuit avec Freebox), Série 140Go (11,99€ puis 19,99€), Free 5G+ 350Go (19,99€, 9,99€ avec Freebox), Free Max illimité (29,99€, 19,99€ avec Freebox). FREEBOX : Pop S 24,99€ fixe, Pop 29,99€ puis 39,99€, Ultra 49,99€ puis 59,99€ avec Netflix+Prime+Disney+Canal+. Résiliation ancienne box prise en charge jusqu'à 100€. RÈGLES ABSOLUES : maximum 1 phrase courte. Jamais de liste à puces. Une seule question à la fois. NE DIS JAMAIS Bonne journée sauf si le client dit explicitement au revoir. Si résiliation : comprends et propose une solution avant tout.",
+        system:"Tu es Robee, assistant IA de Free Mobile. Marie est abonnée Forfait Free 5G+ 350Go à 19,99€/mois. OFFRES MOBILE : Forfait 2€ (2h+50Mo, gratuit avec Freebox), Série 140Go (11,99€ puis 19,99€), Free 5G+ 350Go (19,99€, 9,99€ avec Freebox), Free Max illimité (29,99€, 19,99€ avec Freebox). FREEBOX : Pop S 24,99€ fixe, Pop 29,99€ puis 39,99€, Ultra 49,99€ puis 59,99€ avec Netflix+Prime+Disney+Canal+. Résiliation ancienne box prise en charge jusqu'à 100€. RÈGLES ABSOLUES : 1 phrase max. Jamais de liste. Une question à la fois. Si résiliation : comprends et propose une solution. IMPORTANT : quand le problème est résolu ou que le client n'a plus de questions, tu DOIS obligatoirement terminer par 'Bonne journée !'.",
         messages:chatHistory
       })
     });
@@ -836,9 +821,9 @@ function toggleMic(){
 let ficheVisible=true;
 async function genFiche(){
   var btn=document.getElementById("gen-fiche-btn");
-  if(chatHistory.length<2){alert("Commencez une conversation avec Free Bot avant de generer la fiche.");return;}
+  if(chatHistory.length<2){alert("Commencez une conversation avec Robee avant de generer la fiche.");return;}
   btn.textContent="Generation en cours...";btn.disabled=true;
-  var conv=chatHistory.map(function(m){return (m.role==="user"?"Client":"Free Bot")+" : "+m.content;}).join(" | ");
+  var conv=chatHistory.map(function(m){return (m.role==="user"?"Client":"Robee")+" : "+m.content;}).join(" | ");
   var prompt="Genere une fiche dossier structuree pour cette conversation. Sections : MOTIF DE CONTACT, RESUME DE LA DEMANDE, ACTIONS EFFECTUEES, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : "+conv;
   try{
     var res=await fetch("/api/chat",{
@@ -944,12 +929,14 @@ async function sendRating(){
   done.classList.add('show');
 }
 function checkForGoodbye(text){
-  var words=['bonne journée','bonne soirée','bonne nuit','au revoir','à bientôt',
-    'à très bientôt','n\'hésitez pas','prenez soin','bonne continuation',
-    'problème résolu','ticket créé','à votre service','merci de votre confiance',
-    'belle journée','excellente journée','passez une bonne','bien cordialement'];
   var lower=text.toLowerCase();
-  return words.some(function(w){return lower.includes(w);});
+  var words=['bonne journ','bonne soir','bonne nuit','au revoir',
+    'bientot','bientôt','hesitez pas','prenez soin','bonne continuation',
+    'resolu','résolu','belle journ','excellente journ','passez une bonne',
+    'cordialement','a la prochaine','à la prochaine','tout est en ordre',
+    'est regle','est réglé','bonne fin','votre disposition','profitez bien',
+    'autre chose pour','je vous souhaite','passer une agre'];
+  return words.some(function(w){return lower.indexOf(w)>=0;});
 }
 
 
@@ -1026,7 +1013,7 @@ async function mgrRefresh(){
 
   var list = document.getElementById('mgrConvList');
   if(!mgrConversations.length){
-    list.innerHTML = '<div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Free Bot apparaîtront ici.</div>';
+    list.innerHTML = '<div class="mgr-empty">Aucune conversation encore.<br>Les échanges avec Robee apparaîtront ici.</div>';
     return;
   }
   list.innerHTML = mgrConversations.map(function(conv, idx){
@@ -1049,7 +1036,7 @@ async function mgrGenFiche(idx, btn){
   btn.disabled = true;
   var msgs = conv.message || conv.messages || [];
   var prompt = "Genere une fiche dossier structuree. Sections : MOTIF DE CONTACT, RESUME, ACTIONS, STATUT (Resolu/En cours/Escalade), NOTES. Conversation : " +
-    msgs.map(function(m){return (m.role==='user'?'Client':'Free Bot')+' : '+m.content;}).join(' | ');
+    msgs.map(function(m){return (m.role==='user'?'Client':'Robee')+' : '+m.content;}).join(' | ');
   try{
     var res = await fetch('/api/chat',{
       method:'POST',

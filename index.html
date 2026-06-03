@@ -144,7 +144,7 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);mi
 .chat-info p{font-size:11px;color:var(--grey)}
 .rb-wrap{display:flex;align-items:center;justify-content:center;position:relative}
 .rb-wrap svg{animation:rbIdle 3s ease-in-out infinite;transform-origin:center center}
-.rb-wrap.thinking svg{animation:rbSpin 0.9s linear infinite;transform-origin:center center}
+.rb-wrap.thinking svg,.rb-wrap.spinning svg{animation:rbSpin 0.9s linear infinite;transform-origin:center center}
 @keyframes rbIdle{
   0%,100%{transform:rotateY(0deg) scale(1);filter:drop-shadow(0 0 4px #e2001a)}
   25%{transform:rotateY(20deg) scale(1.05);filter:drop-shadow(0 0 8px #ff4466)}
@@ -744,6 +744,8 @@ async function addMsg(role,text){
   if(role==='user'){
     div.innerHTML='<div class="c-av-sm" style="background:var(--dark3);font-size:12px;font-weight:700">M</div><div><div class="c-bubble">'+text+'</div></div>';
   }else{
+    // Stopper spinning sur anciens messages
+    document.querySelectorAll('.c-msg.coral .rb-wrap').forEach(r=>r.classList.remove('spinning'));
     div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="c-logo-wrap"><span class="c-logo-static">free</span></div></div>';
     if(voiceOn)speak(text);
     await mgrSaveConv();
@@ -752,11 +754,15 @@ async function addMsg(role,text){
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
 }
 function showTyping(){
-  document.querySelectorAll('.rb-wrap').forEach(r=>r.classList.add('thinking'));
+  // Stopper toutes les animations de spin
+  document.querySelectorAll('.rb-wrap').forEach(r=>r.classList.remove('thinking','spinning'));
   const wrap=document.getElementById('chatMessages');
   const div=document.createElement('div');div.className='c-msg coral';div.id='typing-ind';
   div.innerHTML='<div class="c-av-sm"><div class="rb-wrap" style="width:28px;height:28px"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1a1a1a" stroke="#e2001a" stroke-width="1.5"/><text x="14" y="19" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#e2001a">F</text></svg></div></div><div><div class="c-bubble"><div style="display:flex;gap:4px;align-items:center"><div class="c-dot"></div><div class="c-dot"></div><div class="c-dot"></div></div></div></div>';
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+  // Activer spin uniquement sur le dernier avatar
+  var allWraps=wrap.querySelectorAll('.rb-wrap');
+  if(allWraps.length>0)allWraps[allWraps.length-1].classList.add('spinning');
 }
 function removeTyping(){const t=document.getElementById('typing-ind');if(t)t.remove();
   document.querySelectorAll('.rb-wrap').forEach(r=>r.classList.remove('thinking'));}
@@ -776,7 +782,7 @@ async function sendMessage(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:250,
-        system:"Tu es Freebot, assistant IA de Free Mobile. Marie est abonnée Forfait Free 5G+ 350Go à 19,99€/mois. OFFRES MOBILE : Forfait 2€ (2h+50Mo, gratuit avec Freebox), Série 140Go (11,99€ puis 19,99€), Free 5G+ 350Go (19,99€, 9,99€ avec Freebox), Free Max illimité (29,99€, 19,99€ avec Freebox). FREEBOX : Pop S 24,99€ fixe, Pop 29,99€ puis 39,99€, Ultra 49,99€ puis 59,99€ avec Netflix+Prime+Disney+Canal+. Résiliation ancienne box prise en charge jusqu'à 100€. RÈGLES ABSOLUES : 1 phrase max. Jamais de liste. Une question à la fois. Si résiliation : comprends et propose une solution. IMPORTANT : quand le problème est résolu ou que le client n'a plus de questions, tu DOIS obligatoirement terminer par 'Bonne journée !'.",
+        system:"Tu es Freebot, assistant IA de Free Mobile. Marie est abonnée Forfait Free 5G+ 350Go à 19,99€/mois. OFFRES MOBILE : Forfait 2€ (2h+50Mo, gratuit avec Freebox), Série 140Go (11,99€ puis 19,99€), Free 5G+ 350Go (19,99€, 9,99€ avec Freebox), Free Max illimité (29,99€, 19,99€ avec Freebox). FREEBOX : Pop S 24,99€ fixe, Pop 29,99€ puis 39,99€, Ultra 49,99€ puis 59,99€ avec Netflix+Prime+Disney+Canal+. Résiliation ancienne box prise en charge jusqu'à 100€. RÈGLES ABSOLUES : 1 phrase max. Jamais de liste. Une question à la fois. Tutoie JAMAIS le client, toujours vouvoyer (vous, votre, vos). Si résiliation : comprends et propose une solution. IMPORTANT : quand le problème est résolu ou que le client n'a plus de questions, tu DOIS obligatoirement terminer par 'Bonne journée !'.",
         messages:chatHistory
       })
     });
